@@ -30,8 +30,17 @@ export const POST = async (req: Request) => {
         },
         { status: 401 }
       );
+      const cartId = data.cartId as string;
 
-    // fetching product details
+    // Check if the product is already in the user's cart
+    const cartItems = await getCartItems(session.user.id, cartId);
+
+    if (cartItems) {
+      // Redirect to the main checkout route
+      return NextResponse.redirect(new URL("/checkout", req.url).toString());
+    }
+
+    // Fetching product details
     const product = await ProductModel.findById(productId);
     if (!product)
       return NextResponse.json(
@@ -41,19 +50,20 @@ export const POST = async (req: Request) => {
         { status: 404 }
       );
 
-    // Ensure the product price is in the smallest currency unit (for JPY, no decimals)
-    const line_items = [{
+    // Prepare Stripe line item
+    const line_items = {
       price_data: {
         currency: "JPY",
-        unit_amount: product.price.discounted, // Make sure it's in smallest unit (no decimals for JPY)
+        unit_amount: Math.round(product.price.discounted * 100), // Ensure price is in cents
         product_data: {
           name: product.title,
           images: [product.thumbnail.url],
         },
       },
       quantity: 1,
-    }];
+    };
 
+    // Create Stripe customer
     const customer = await stripe.customers.create({
       metadata: {
         userId: session.user.id,
@@ -69,21 +79,21 @@ export const POST = async (req: Request) => {
       },
     });
 
-    // We need to generate a payment link and send to our frontend app
+    // Create Stripe checkout session
     const params: Stripe.Checkout.SessionCreateParams = {
       mode: "payment",
       payment_method_types: ["card"],
-      line_items: line_items,
-      success_url: process.env.PAYMENT_SUCCESS_URL!, // Ensure this is defined in .env
-      cancel_url: process.env.PAYMENT_CANCEL_URL!, // Ensure this is defined in .env
+      line_items: [line_items],
+      success_url: process.env.PAYMENT_SUCCESS_URL!,
+      cancel_url: process.env.PAYMENT_CANCEL_URL!,
       shipping_address_collection: { allowed_countries: ["JP"] },
       customer: customer.id,
     };
 
     const checkoutSession = await stripe.checkout.sessions.create(params);
     return NextResponse.json({ url: checkoutSession.url });
+
   } catch (error) {
-    console.error("Stripe checkout error:", error);
     return NextResponse.json(
       { error: "Something went wrong, could not checkout!" },
       { status: 500 }

@@ -22,7 +22,7 @@ const AdminSidebar = ({ children }: Props) => {
           <li>
             <Link
               className="font-semibold text-lg text-white"
-              href="/dashboard"
+              href="/"
             >
               Ecommerce
             </Link>
@@ -66,12 +66,6 @@ const AdminSidebar = ({ children }: Props) => {
             <hr className="w-full " />
           </li>
         </ul>
-
-        <div>
-          <SignOutButton>
-            <div className="cursor-pointer text-white">Logout</div>
-          </SignOutButton>
-        </div>
       </div>
       <div className="max-w-screen-xl mx-auto flex-1 p-4 overflow-y-auto">
         {children}
