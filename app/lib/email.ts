@@ -1,3 +1,4 @@
+import { link } from "fs";
 import { MailtrapClient } from "mailtrap";
 import nodemailer from "nodemailer";
 
@@ -48,13 +49,13 @@ const sendEmailVerificationLink = async (profile: profile, linkUrl: string) => {
   await client.send({
     from: sender,
     to: recipients,
-    template_uuid: "eba72c1b-18b1-465d-af1a-913fad2fd2f6",
+    template_uuid: "8065939c-7d02-416c-a758-fbdd33cb0ecb",
     template_variables: {
-      subject: "Verify Your Email",
+      subject: "Verify Email",
       user_name: profile.name,
-      link: linkUrl,
-      btn_title: "Click Me to Verify Email",
-      company_name: "Next Ecom",
+      company_name: "NextJS Ecomm",
+      btn_title:"Click to verify Email",
+      link:linkUrl
     },
   });
 };
@@ -77,13 +78,13 @@ const sendForgetPasswordLink = async (profile: profile, linkUrl: string) => {
   await client.send({
     from: sender,
     to: recipients,
-    template_uuid: "eba72c1b-18b1-465d-af1a-913fad2fd2f6",
+    template_uuid: "8065939c-7d02-416c-a758-fbdd33cb0ecb",
     template_variables: {
-      subject: "Forget Password Link",
+      subject: "Password Reset Successful",
       user_name: profile.name,
-      link: linkUrl,
-      btn_title: "Reset Password",
-      company_name: "Next Ecom",
+       company_name: "NextJS Ecomm",
+       btn_title:"Sign In",
+       link: process.env.SIGN_IN_URL!
     },
   });
 };
