@@ -41,17 +41,18 @@ export const POST = async (req: Request) => {
         { status: 404 }
       );
 
-    const line_items = {
+    // Ensure the product price is in the smallest currency unit (for JPY, no decimals)
+    const line_items = [{
       price_data: {
         currency: "JPY",
-        unit_amount: product.price.discounted,
+        unit_amount: product.price.discounted, // Make sure it's in smallest unit (no decimals for JPY)
         product_data: {
           name: product.title,
           images: [product.thumbnail.url],
         },
       },
       quantity: 1,
-    };
+    }];
 
     const customer = await stripe.customers.create({
       metadata: {
@@ -68,13 +69,13 @@ export const POST = async (req: Request) => {
       },
     });
 
-    // we need to generate payment link and send to our frontend app
+    // We need to generate a payment link and send to our frontend app
     const params: Stripe.Checkout.SessionCreateParams = {
       mode: "payment",
       payment_method_types: ["card"],
-      line_items: [line_items],
-      success_url: process.env.PAYMENT_SUCCESS_URL!,
-      cancel_url: process.env.PAYMENT_CANCEL_URL!,
+      line_items: line_items,
+      success_url: process.env.PAYMENT_SUCCESS_URL!, // Ensure this is defined in .env
+      cancel_url: process.env.PAYMENT_CANCEL_URL!, // Ensure this is defined in .env
       shipping_address_collection: { allowed_countries: ["JP"] },
       customer: customer.id,
     };
@@ -82,6 +83,7 @@ export const POST = async (req: Request) => {
     const checkoutSession = await stripe.checkout.sessions.create(params);
     return NextResponse.json({ url: checkoutSession.url });
   } catch (error) {
+    console.error("Stripe checkout error:", error);
     return NextResponse.json(
       { error: "Something went wrong, could not checkout!" },
       { status: 500 }
