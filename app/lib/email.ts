@@ -9,7 +9,7 @@ const ENDPOINT = process.env.MAILTRAP_ENDPOINT!;
 const client = new MailtrapClient({ endpoint: ENDPOINT, token: TOKEN });
 
 const sender = {
-  email: "nextecom@reactnativehive.com",
+  email: "verification@myjavaproject.org",
   name: "Next Ecom Verification",
 };
 
@@ -20,13 +20,13 @@ interface EmailOptions {
 }
 
 const generateMailTransporter = () => {
-  const transport = nodemailer.createTransport({
+  var transport = nodemailer.createTransport({
     host: "sandbox.smtp.mailtrap.io",
     port: 2525,
     auth: {
-      user: "bcab674080b230",
-      pass: "7fc09eafd1ea51",
-    },
+      user: "a84eff184a5ce2",
+      pass: "ead965c086a4b9"
+    }
   });
   return transport;
 };
