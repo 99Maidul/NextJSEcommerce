@@ -58,7 +58,7 @@ export const POST = async (req: Request) => {
           userId,
           stripeCustomerId: stripeSession.customer,
           paymentIntent: stripeSession.payment_intent,
-          totalAmount: stripeSession.amount_subtotal / 100,
+          totalAmount: stripeSession.amount_subtotal,
           shippingDetails: {
             address: stripeSession.customer_details.address,
             email: stripeSession.customer_details.email,
@@ -90,7 +90,7 @@ export const POST = async (req: Request) => {
           userId,
           stripeCustomerId: stripeSession.customer,
           paymentIntent: stripeSession.payment_intent,
-          totalAmount: stripeSession.amount_subtotal / 100,
+          totalAmount: stripeSession.amount_subtotal,
           shippingDetails: {
             address: stripeSession.customer_details.address,
             email: stripeSession.customer_details.email,

@@ -54,7 +54,7 @@ export const POST = async (req: Request) => {
     const line_items = {
       price_data: {
         currency: "JPY",
-        unit_amount: Math.round(product.price.discounted * 100), // Ensure price is in cents
+        unit_amount: product.price.discounted, // Ensure price is in cents
         product_data: {
           name: product.title,
           images: [product.thumbnail.url],
